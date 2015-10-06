@@ -1,0 +1,84 @@
+"""
+Display a tree using graphviz and image libraries
+"""
+
+__author__ = """
+Ralph W. Crosby
+rwc@cs.tamu.edu
+Department of Computer Science and Engineering
+Texas A&M University
+College Station, TX 77843
+"""
+
+__version__ = "1.0.0"
+__date__    = "Mon May 20 10:11:47 CDT 2013"
+
+# *************************************************************************
+
+import os
+import pygraphviz as GV
+import tempfile
+import sys
+
+import TreeUtilities.Tree
+
+# *************************************************************************
+
+class DisplayUnrooted(GV.AGraph):
+    """
+    Use graphviz to display an unrooted tree
+    """
+    
+    def __init__(self, urtree, prog='neato'):
+
+        GV.AGraph.__init__(self)
+
+        self.layout = prog
+
+        [self.__AddNode(n) for n in urtree.vertices]
+        [self.__AddEdge(e) for e in urtree.edges]
+
+    def Show(self, prog=None):
+        """Display to screen"""
+
+        layout = self.layout if not prog else prog
+
+        # Write the graph to a temp file
+        tmp = tempfile.NamedTemporaryFile(suffix='.png', delete=False)
+        self.draw(tmp,
+                  format='png',
+                  prog=layout)
+        tmp.close()
+
+        # Display the graph
+        if sys.platform == "darwin":
+            app = "open -a Preview.app"
+        elif sys.platform == "linux":
+            app = "xdg-open"
+
+        cmd = "({app} {f}; sleep 20; rm -f {f})&".format(app=app,f=tmp.name)
+        os.system(cmd)
+
+    def SaveImage(self, fn, prog=None):
+        """Save image as png file"""
+        layout = self.layout if not prog else prog
+        self.draw("{}.png".format(fn),
+                  format='png',
+                  prog=layout)
+
+    def SaveDot(self, fn):
+        """Save image as graphviz vector format"""
+        self.write("{}.dot".format(fn))
+
+    def __AddNode(self, n):
+        self.add_node(n.nodeid,
+                       label=str(n),
+                       color = 'red' if type(n) is TreeUtilities.Tree.Leaf else 'blue')
+
+    def __AddEdge(self, e):
+        self.add_edge(e.nodes[0].nodeid, e.nodes[1].nodeid)
+
+# *************************************************************************
+
+if __name__ == '__main__':
+    sys.exit("Not a main program")

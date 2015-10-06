@@ -1,0 +1,41 @@
+\documentclass[11pt]{article}
+\usepackage{fancyhdr}
+\usepackage[utf8x]{inputenc}
+
+\usepackage{graphicx}
+\usepackage[letterpaper,left=.75in,right=.75in,top=.75in,bottom=.75in]{geometry}
+\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{morefloats}
+\usepackage[export]{adjustbox}
+
+\pagestyle{fancy}
+\chead{[[ title|replace('_','\_') ]]}
+\rfoot{\today}
+\cfoot{\thepage}
+\lfoot{Ralph W. Crosby}
+
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\begin{document}
+
+{% set i = 0 %}
+
+{% for file in files %}
+
+\begin{figure}
+  \centering
+  \includegraphics[frame, max width=\textwidth, max height=.9\textheight]{[[ file ]]}
+  \caption{[[ file|replace('_','\_') ]]}
+\end{figure}
+
+{% set i = i + 1 %}
+
+{% if i >= 30 %}
+   \clearpage
+   {% set i = 0 %}
+{% endif %}
+
+{% endfor %}
+
+\end{document}
